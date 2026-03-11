@@ -1,6 +1,6 @@
 <template>
   <nav class="top-nav">
-    <div class="brand">SunAware</div>
+    <div class="brand">iTan</div>
     <ul>
       <li><RouterLink to="/uv">Current UV</RouterLink></li>
       <li><RouterLink to="/protection">Protection Advice</RouterLink></li>

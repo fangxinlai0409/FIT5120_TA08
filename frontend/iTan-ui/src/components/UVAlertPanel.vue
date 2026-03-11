@@ -20,9 +20,16 @@
       </div>
       <p class="warning">{{ warning }}</p>
       <div class="trend">
-        <h3>Today7s trend</h3>
-        <svg viewBox="0 0 200 80" preserveAspectRatio="none">
-          <polyline :points="chartPoints" stroke="currentColor" fill="none" stroke-width="3"></polyline>
+        <h3>Today's trend</h3>
+        <svg class="trend-chart" viewBox="0 0 200 160" preserveAspectRatio="none">
+          <polyline
+            :points="chartPoints"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></polyline>
         </svg>
         <div class="trend-labels">
           <span v-for="point in trend" :key="point.time">{{ formatHour(point.time) }}</span>
@@ -64,24 +71,45 @@ const props = defineProps({
 
 const riskClass = computed(() => {
   const label = props.reading?.risk_level
-  return label ? `risk-${label.toLowerCase().replace(' ', '-')}` : 'risk-low'
+  return label
+    ? `risk-${label.toLowerCase().replace(/\s+/g, '-')}`
+    : 'risk-low'
 })
 
 const chartPoints = computed(() => {
   if (!props.trend.length) return ''
-  const maxUV = Math.max(...props.trend.map((point) => point.uv_index), 11)
+
+  const values = props.trend.map((point) => Number(point.uv_index) || 0)
+  const rawMax = Math.max(...values, 1)
+  const visualMax = rawMax < 3 ? 3 : rawMax
+
+  const width = 200
+  const height = 160
+  const topPadding = 16
+  const bottomPadding = 16
+  const drawableHeight = height - topPadding - bottomPadding
+
   return props.trend
     .map((point, index) => {
-      const x = (index / (props.trend.length - 1 || 1)) * 200
-      const y = 80 - (point.uv_index / maxUV) * 70 - 5
+      const uv = (Number(point.uv_index) || 0) * 1.8
+      const x = (index / (props.trend.length - 1 || 1)) * width
+      const y =
+        height -
+        bottomPadding -
+        (Math.min(uv, visualMax) / visualMax) * drawableHeight
+
       return `${x},${y}`
     })
     .join(' ')
 })
 
 const formatHour = (isoString) => {
+  if (!isoString) return '--'
   const date = new Date(isoString)
-  return date.toLocaleTimeString([], { hour: '2-digit' })
+  return date.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 </script>
 
@@ -158,14 +186,15 @@ h2 {
   border-radius: 12px;
 }
 
-.trend h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
+.trend {
+  margin-top: 12px;
 }
 
-svg {
+.trend-chart {
+  display: block;
   width: 100%;
-  height: 120px;
+  height: 360px;
+  margin-top: 8px;
   color: #2563eb;
   background: #eff6ff;
   border-radius: 12px;
@@ -174,9 +203,9 @@ svg {
 .trend-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  margin-top: 10px;
+  font-size: 0.9rem;
   color: #6b7280;
-  margin-top: 0.4rem;
 }
 
 .risk-low {

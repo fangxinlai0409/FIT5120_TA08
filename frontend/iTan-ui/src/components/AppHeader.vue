@@ -2,7 +2,7 @@
   <header class="app-header">
     <div>
       <p class="eyebrow">Sun safety companion</p>
-      <h1>SunAware</h1>
+      <h1>iTan</h1>
       <p class="subtitle">Stay ahead of UV risk in Victoria</p>
     </div>
     <div class="location-picker">

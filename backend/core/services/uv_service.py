@@ -4,10 +4,10 @@ from random import uniform
 from core.models import Location, ProtectionRule, UVReading
 
 UV_BUCKETS = [
-    (0, 2, "Low", 45),
-    (3, 5, "Moderate", 30),
-    (6, 7, "High", 20),
-    (8, 10, "Very High", 12),
+    (0, 2.9, "Low", 45),
+    (3, 5.9, "Moderate", 30),
+    (6, 7.9, "High", 20),
+    (8, 10.9, "Very High", 12),
     (11, 15, "Extreme", 8),
 ]
 
@@ -35,10 +35,16 @@ REGION_LABELS = {
 
 
 def classify_uv(uv_value: float) -> tuple[str, int]:
-    for min_uv, max_uv, label, burn_minutes in UV_BUCKETS:
-        if min_uv <= uv_value <= max_uv:
-            return label, burn_minutes
-    return "Extreme", 8
+    if uv_value < 3:
+        return "Low", 45
+    elif uv_value < 6:
+        return "Moderate", 30
+    elif uv_value < 8:
+        return "High", 20
+    elif uv_value < 11:
+        return "Very High", 12
+    else:
+        return "Extreme", 8
 
 
 def get_or_create_default_location() -> Location:

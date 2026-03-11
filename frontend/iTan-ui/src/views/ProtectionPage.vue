@@ -1,9 +1,13 @@
 <template>
   <section class="protection-page">
     <ProtectionAdvicePanel
+      :reading="state.uvPayload.value?.reading"
+      :trend="state.uvPayload.value?.trend || []"
+      :location-label="state.location.value"
+      :last-updated="state.lastUpdated.value"
       :rules="state.protectionRules.value"
       :recommended="state.recommendedAdvice.value"
-      :loading="state.loading.rules"
+      :loading="state.loading.rules || state.loading.uv"
       @refresh="refreshAdvice"
     />
   </section>
@@ -25,9 +29,10 @@ const props = defineProps({
 
 const { state, actions } = props
 
-const refreshAdvice = () => {
+const refreshAdvice = async () => {
+  await actions.loadUV()
   const uvValue = state.uvPayload.value?.reading?.uv_index ?? 0
-  actions.loadRules(uvValue)
+  await actions.loadRules(uvValue)
 }
 </script>
 

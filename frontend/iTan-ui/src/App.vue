@@ -5,6 +5,7 @@ import AppHeader from './components/AppHeader.vue'
 import { RouterView } from 'vue-router'
 import learningFeed from './data/learningFeed'
 import { fetchCancerStats, fetchCurrentUV, fetchProtectionRules, fetchUVRegions } from './services/api'
+import { notifyHighUV } from './services/notification'
 
 const location = ref('Melbourne')
 const uvPayload = ref(null)
@@ -25,7 +26,11 @@ const loadUV = async () => {
       hour: '2-digit',
       minute: '2-digit',
     })
-    await loadRules(data.reading?.uv_index)
+
+    const currentUV = Number(data.reading?.uv_index) || 0
+    notifyHighUV(currentUV)
+
+    await loadRules(currentUV)
   } finally {
     loading.uv = false
   }

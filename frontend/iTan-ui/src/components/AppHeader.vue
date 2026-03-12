@@ -13,11 +13,22 @@
         <option value="Bendigo">Bendigo</option>
       </select>
       <button type="button" class="refresh" @click="$emit('refresh')">Refresh</button>
+      <button type="button" class="notify-btn" @click="toggleNotifications">
+        {{ notificationsEnabled ? 'Disable UV Alerts' : 'Enable UV Alerts' }}
+      </button> 
     </div>
   </header>
 </template>
 
 <script setup>
+
+import { ref, onMounted } from 'vue'
+import {
+  requestNotificationPermission,
+  areNotificationsEnabled,
+  disableNotifications,
+} from '../services/notification'
+
 defineProps({
   modelValue: {
     type: String,
@@ -26,6 +37,23 @@ defineProps({
 })
 
 defineEmits(['update:modelValue', 'refresh'])
+
+const notificationsEnabled = ref(false)
+
+onMounted(() => {
+  notificationsEnabled.value = areNotificationsEnabled()
+})
+
+const toggleNotifications = async () => {
+  if (notificationsEnabled.value) {
+    disableNotifications()
+    notificationsEnabled.value = false
+    return
+  }
+
+  const permission = await requestNotificationPermission()
+  notificationsEnabled.value = permission === 'granted'
+}
 </script>
 
 <style scoped>
@@ -80,5 +108,19 @@ select {
   padding: 0.5rem 0.9rem;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.notify-btn {
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.notify-btn:hover {
+  background: #f9fafb;
 }
 </style>

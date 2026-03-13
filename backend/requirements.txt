@@ -1,9 +1,8 @@
 Django==6.0.3
 djangorestframework==3.16.1
 django-cors-headers==4.9.0
-mysqlclient==2.2.8
 python-dotenv==1.2.2
 gunicorn
 whitenoise
-psycopg2-binary
 dj-database-url
+psycopg2-binary

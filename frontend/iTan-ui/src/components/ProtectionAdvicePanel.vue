@@ -50,7 +50,7 @@
         <h3>Visual guide</h3>
         <div class="visual-grid">
           <div class="visual-item">
-            <div class="visual-icon">👕</div>
+            <div class="visual-icon">🥼</div>
             <span>Long sleeves</span>
           </div>
           <div class="visual-item">
@@ -199,7 +199,7 @@ const targetedAdvice = computed(() => {
         {
           title: 'Wear long sleeves',
           desc: 'Choose protective clothing to reduce UV exposure on your skin.',
-          icon: '👕',
+          icon: '🥼',
         },
         {
           title: 'Use SPF50+ sunscreen',
@@ -232,7 +232,7 @@ const targetedAdvice = computed(() => {
         {
           title: 'Wear long sleeves and long pants',
           desc: 'Cover as much skin as possible when outdoors.',
-          icon: '👕',
+          icon: '🥼',
         },
         {
           title: 'Use a wide-brim hat',
@@ -264,7 +264,7 @@ const targetedAdvice = computed(() => {
       {
         title: 'Cover up fully',
         desc: 'Wear long sleeves, long pants, and tightly woven fabrics.',
-        icon: '👕',
+        icon: '🥼',
       },
       {
         title: 'Use SPF50+ sunscreen',

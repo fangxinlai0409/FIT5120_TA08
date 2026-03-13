@@ -37,7 +37,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'sunaware_api.urls'
+ROOT_URLCONF = 'iTan_api.urls'
 
 TEMPLATES = [
     {
@@ -54,7 +54,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sunaware_api.wsgi.application'
+WSGI_APPLICATION = 'iTan_api.wsgi.application'
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 

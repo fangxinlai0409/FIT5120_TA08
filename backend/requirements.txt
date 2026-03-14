@@ -5,5 +5,5 @@ python-dotenv==1.2.2
 gunicorn
 whitenoise
 dj-database-url
-psycopg2-binary
 requests==2.32.3
+mysqlclient==2.2.4

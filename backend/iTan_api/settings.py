@@ -5,6 +5,12 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+MYSQL_HOST = os.environ.get("MYSQLHOST")
+MYSQL_PORT = os.environ.get("MYSQLPORT", "3306")
+MYSQL_USER = os.environ.get("MYSQLUSER")
+MYSQL_PASSWORD = os.environ.get("MYSQLPASSWORD")
+MYSQL_DATABASE = os.environ.get("MYSQLDATABASE")
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -58,9 +64,19 @@ WSGI_APPLICATION = 'iTan_api.wsgi.application'
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if DATABASE_URL:
+if all([MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE]):
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL)
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": MYSQL_DATABASE,
+            "USER": MYSQL_USER,
+            "PASSWORD": MYSQL_PASSWORD,
+            "HOST": MYSQL_HOST,
+            "PORT": MYSQL_PORT,
+            "OPTIONS": {
+                "charset": "utf8mb4",
+            },
+        }
     }
 else:
     DATABASES = {

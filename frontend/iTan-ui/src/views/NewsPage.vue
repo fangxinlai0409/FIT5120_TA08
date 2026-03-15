@@ -13,7 +13,7 @@
 
     <SkinCancerChart
       :series="state.cancerStats.value"
-      :loading="state.loading.stats"
+      :loading="state.loading.incidenceStats"
       title="Skin cancer incidence (per 100k)"
       valueKey="incidence_rate"
       @refresh="actions.loadStats"
@@ -46,7 +46,7 @@
 
     <SkinCancerChart
       :series="state.mortalityStats.value"
-      :loading="state.loading.stats"
+      :loading="state.loading.mortalityStats"
       title="Melanoma mortality (per 100k)"
       valueKey="mortality_rate"
       @refresh="actions.loadMortalityStats"

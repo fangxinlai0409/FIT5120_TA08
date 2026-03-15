@@ -24,7 +24,13 @@ const protectionRules = ref([])
 const recommendedAdvice = ref('')
 const uvRegions = ref([])
 const knowledgeItems = ref(learningFeed)
-const loading = reactive({ uv: true, stats: true, rules: true, regions: true })
+const loading = reactive({
+  uv: true,
+  incidenceStats: true,
+  mortalityStats: true,
+  rules: true,
+  regions: true,
+})
 const lastUpdated = ref('-')
 
 const loadUV = async () => {
@@ -47,19 +53,19 @@ const loadUV = async () => {
 }
 
 const loadStats = async () => {
-  loading.stats = true
+  loading.incidenceStats = true
   try {
     cancerStats.value = await fetchCancerStats(selectedSex.value)
   } catch (error) {
     console.error('Failed to load cancer stats:', error)
     cancerStats.value = []
   } finally {
-    loading.stats = false
+    loading.incidenceStats = false
   }
 }
 
 const loadMortalityStats = async () => {
-  loading.stats = true
+  loading.mortalityStats = true
   try {
     mortalityStats.value = await fetchMortalityStats(
       selectedMortalitySex.value,
@@ -69,7 +75,7 @@ const loadMortalityStats = async () => {
     console.error('Failed to load mortality stats:', error)
     mortalityStats.value = []
   } finally {
-    loading.stats = false
+    loading.mortalityStats = false
   }
 }
 

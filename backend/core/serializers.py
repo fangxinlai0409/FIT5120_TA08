@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import CancerStatistic, Location, ProtectionRule, UVReading
+from .models import CancerStatistic, Location, ProtectionRule, UVReading, MelanomaMortalityStatistic
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -29,6 +29,10 @@ class CancerStatisticSerializer(serializers.ModelSerializer):
         model = CancerStatistic
         fields = ["id", "year", "incidence_rate", "age_group", "sex"]
 
+class MelanomaMortalityStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MelanomaMortalityStatistic
+        fields = ["id", "year", "mortality_rate", "age_group", "sex"]
 
 class ProtectionRuleSerializer(serializers.ModelSerializer):
     class Meta:

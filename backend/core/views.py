@@ -3,11 +3,12 @@ from datetime import datetime
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import CancerStatistic, ProtectionRule
+from .models import CancerStatistic, ProtectionRule, MelanomaMortalityStatistic
 from .serializers import (
     CancerStatisticSerializer,
     ProtectionRuleSerializer,
     UVReadingSerializer,
+    MelanomaMortalityStatisticSerializer,
 )
 from .services.uv_service import (
     classify_uv,
@@ -91,3 +92,17 @@ def build_warning(uv_value: float, risk_label: str, burn_minutes: int | None) ->
     }
     advice = additions.get(risk_label, "Use multiple sun protection measures.")
     return f"UV {uv_value} ({risk_label}). {suffix} {advice}"
+
+class MelanomaMortalityStatisticView(APIView):
+    def get(self, request):
+        sex = request.query_params.get("sex", "Persons")
+        age_group = request.query_params.get("age_group", "15-24")
+
+        stats = MelanomaMortalityStatistic.objects.filter(
+            sex=sex,
+            age_group=age_group,
+        ).order_by("year")
+
+        return Response({
+            "data": MelanomaMortalityStatisticSerializer(stats, many=True).data
+        })

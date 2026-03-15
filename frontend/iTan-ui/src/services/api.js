@@ -39,3 +39,14 @@ export const fetchUVRegions = async (uv) => {
   })
   return response.data.regions
 }
+
+export const fetchMortalityStats = async (sex = 'Persons', ageGroup = '15-24') => {
+  const response = await apiClient.get('melanoma-mortality/', {
+    params: {
+      sex,
+      age_group: ageGroup,
+    },
+  })
+
+  return response.data.data
+}

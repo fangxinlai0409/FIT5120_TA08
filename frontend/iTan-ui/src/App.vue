@@ -4,13 +4,22 @@ import TopNav from './components/TopNav.vue'
 import AppHeader from './components/AppHeader.vue'
 import { RouterView } from 'vue-router'
 import learningFeed from './data/learningFeed'
-import { fetchCancerStats, fetchCurrentUV, fetchProtectionRules, fetchUVRegions } from './services/api'
+import {
+  fetchCancerStats,
+  fetchCurrentUV,
+  fetchProtectionRules,
+  fetchUVRegions,
+  fetchMortalityStats,
+} from './services/api'
 import { notifyHighUV } from './services/notification'
 
 const location = ref('Melbourne')
 const uvPayload = ref(null)
 const cancerStats = ref([])
 const selectedSex = ref('Persons')
+const mortalityStats = ref([])
+const selectedMortalitySex = ref('Persons')
+const selectedAgeGroup = ref("15–24")
 const protectionRules = ref([])
 const recommendedAdvice = ref('')
 const uvRegions = ref([])
@@ -49,6 +58,21 @@ const loadStats = async () => {
   }
 }
 
+const loadMortalityStats = async () => {
+  loading.stats = true
+  try {
+    mortalityStats.value = await fetchMortalityStats(
+      selectedMortalitySex.value,
+      selectedAgeGroup.value
+    )
+  } catch (error) {
+    console.error('Failed to load mortality stats:', error)
+    mortalityStats.value = []
+  } finally {
+    loading.stats = false
+  }
+}
+
 const loadRegions = async () => {
   loading.regions = true
   try {
@@ -73,6 +97,7 @@ const loadRules = async (uvIndex = 0) => {
 const refreshAll = async () => {
   await loadUV()
   await loadStats()
+  await loadMortalityStats()
   loadRegions()
 }
 
@@ -80,6 +105,7 @@ const exposedState = {
   location,
   uvPayload,
   cancerStats,
+  mortalityStats,
   protectionRules,
   recommendedAdvice,
   uvRegions,
@@ -87,11 +113,14 @@ const exposedState = {
   loading,
   lastUpdated,
   selectedSex,
+  selectedMortalitySex,
+  selectedAgeGroup,
 }
 
 const actions = {
   loadUV,
   loadStats,
+  loadMortalityStats,
   loadRegions,
   loadRules,
   refreshAll,

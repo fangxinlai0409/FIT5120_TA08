@@ -6,6 +6,7 @@ from .views import (
     ProtectionAdviceView,
     UVMessageView,
     UVRegionView,
+    MelanomaMortalityStatisticView,
 )
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path("uv/regions/", UVRegionView.as_view(), name="uv-regions"),
     path("cancer-stats/", CancerStatisticView.as_view(), name="cancer-stats"),
     path("protection/", ProtectionAdviceView.as_view(), name="protection-advice"),
+    path("melanoma-mortality/", MelanomaMortalityStatisticView.as_view(), name="melanoma-mortality"),
 ]

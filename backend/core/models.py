@@ -36,9 +36,21 @@ class CancerStatistic(TimeStampedModel):
     incidence_rate = models.DecimalField(max_digits=6, decimal_places=2, help_text="Cases per 100k")
     age_group = models.CharField(max_length=50, default="All ages")
     sex = models.CharField(max_length=20, default="Persons")
-    
+
     class Meta:
         ordering = ["year"]
+
+class MelanomaMortalityStatistic(TimeStampedModel):
+    year = models.PositiveIntegerField()
+    mortality_rate = models.DecimalField(max_digits=6, decimal_places=2, help_text="Deaths per 100k")
+    age_group = models.CharField(max_length=50)
+    sex = models.CharField(max_length=20)
+
+    class Meta:
+        ordering = ["year"]
+
+    def __str__(self):
+        return f"{self.year} - {self.sex} - {self.age_group} - mortality"
 
 
 class ProtectionRule(TimeStampedModel):

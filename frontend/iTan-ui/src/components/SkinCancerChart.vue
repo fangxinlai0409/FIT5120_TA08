@@ -3,7 +3,7 @@
     <header>
       <div>
         <p class="eyebrow">Awareness insight</p>
-        <h2>Skin cancer incidence</h2>
+        <h2>{{ title }}</h2>
       </div>
       <button type="button" class="ghost" @click="$emit('refresh')">Refresh data</button>
     </header>
@@ -12,7 +12,7 @@
       <Line
         :options="chartOptions"
         :data="chartData"
-        aria-label="Skin cancer incidence trend"
+        aria-label="Skin cancer trend chart"
         role="img"
       />
     </div>
@@ -43,6 +43,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  title: {
+    type: String,
+    default: 'Skin cancer incidence (per 100k)',
+  },
+  valueKey: {
+    type: String,
+    default: 'incidence_rate',
+  },
 })
 
 defineEmits(['refresh'])
@@ -51,8 +59,8 @@ const chartData = computed(() => ({
   labels: props.series.map((item) => item.year),
   datasets: [
     {
-      label: 'Incidence per 100k people',
-      data: props.series.map((item) => item.incidence_rate),
+      label: 'Rate per 100k people',
+      data: props.series.map((item) => item[props.valueKey]),
       tension: 0.4,
       fill: {
         target: 'origin',
@@ -73,7 +81,7 @@ const chartOptions = {
     legend: { display: false },
     tooltip: {
       callbacks: {
-        label: (context) => `${context.parsed.y} cases per 100k`,
+        label: (context) => `${context.parsed.y} per 100k`,
       },
     },
   },

@@ -35,7 +35,8 @@ class CancerStatistic(TimeStampedModel):
     year = models.PositiveIntegerField()
     incidence_rate = models.DecimalField(max_digits=6, decimal_places=2, help_text="Cases per 100k")
     age_group = models.CharField(max_length=50, default="All ages")
-
+    sex = models.CharField(max_length=20, default="Persons")
+    
     class Meta:
         ordering = ["year"]
 

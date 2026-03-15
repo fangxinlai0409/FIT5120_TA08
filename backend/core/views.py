@@ -49,9 +49,9 @@ class UVMessageView(APIView):
 
 class CancerStatisticView(APIView):
     def get(self, request):
-        stats = CancerStatistic.objects.all()
+        sex = request.query_params.get("sex", "Persons")
+        stats = CancerStatistic.objects.filter(sex=sex).order_by("year")
         return Response({"data": CancerStatisticSerializer(stats, many=True).data})
-
 
 class UVRegionView(APIView):
     def get(self, request):

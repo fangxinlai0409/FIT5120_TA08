@@ -15,10 +15,17 @@ export const fetchUVMessage = async (uvValue) => {
   return response.data
 }
 
-export const fetchCancerStats = async () => {
-  const response = await apiClient.get('cancer-stats/')
-  console.log('cancer-stats response:', response.data)
-  return response.data.data
+export async function fetchCancerStats(sex = 'Persons') {
+  const response = await fetch(
+    `http://127.0.0.1:8000/api/cancer-stats/?sex=${encodeURIComponent(sex)}`
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch cancer stats')
+  }
+
+  const result = await response.json()
+  return result.data
 }
 
 export const fetchProtectionRules = async (uvValue) => {

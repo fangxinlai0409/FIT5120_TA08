@@ -27,7 +27,7 @@ class UVReadingSerializer(serializers.ModelSerializer):
 class CancerStatisticSerializer(serializers.ModelSerializer):
     class Meta:
         model = CancerStatistic
-        fields = ["id", "year", "incidence_rate", "age_group"]
+        fields = ["id", "year", "incidence_rate", "age_group", "sex"]
 
 
 class ProtectionRuleSerializer(serializers.ModelSerializer):

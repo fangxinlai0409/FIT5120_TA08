@@ -10,6 +10,7 @@ import { notifyHighUV } from './services/notification'
 const location = ref('Melbourne')
 const uvPayload = ref(null)
 const cancerStats = ref([])
+const selectedSex = ref('Persons')
 const protectionRules = ref([])
 const recommendedAdvice = ref('')
 const uvRegions = ref([])
@@ -39,7 +40,10 @@ const loadUV = async () => {
 const loadStats = async () => {
   loading.stats = true
   try {
-    cancerStats.value = await fetchCancerStats()
+    cancerStats.value = await fetchCancerStats(selectedSex.value)
+  } catch (error) {
+    console.error('Failed to load cancer stats:', error)
+    cancerStats.value = []
   } finally {
     loading.stats = false
   }
@@ -82,6 +86,7 @@ const exposedState = {
   knowledgeItems,
   loading,
   lastUpdated,
+  selectedSex,
 }
 
 const actions = {

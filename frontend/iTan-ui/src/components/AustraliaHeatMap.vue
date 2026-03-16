@@ -46,7 +46,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import victoriaSa4 from '@/data/victoriaSA4'
+import victoriaSa4 from '@/data/victoriaSa4'
 
 const props = defineProps({
   regions: {

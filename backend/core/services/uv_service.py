@@ -12,27 +12,18 @@ UV_BUCKETS = [
     (11, 15, "Extreme", 8),
 ]
 
-REGIONAL_BASELINES = {
-    "WA": 9.2,
-    "NT": 10.1,
-    "SA": 7.4,
-    "QLD": 10.5,
-    "NSW": 8.6,
-    "ACT": 8.2,
-    "VIC": 7.1,
-    "TAS": 5.9,
-}
+VICTORIA_SA4_CENTERS = [
+    ("BARWON", "Barwon", -38.1500, 144.3600),
+    ("GIPPSLAND", "Gippsland", -38.1100, 146.4000),
+    ("HUME", "Hume", -36.3700, 146.7000),
+    ("LODDON_MALLEE", "Loddon Mallee", -36.7500, 144.2800),
 
-REGION_LABELS = {
-    "WA": "Western Australia",
-    "NT": "Northern Territory",
-    "SA": "South Australia",
-    "QLD": "Queensland",
-    "NSW": "New South Wales",
-    "ACT": "Australian Capital Territory",
-    "VIC": "Victoria",
-    "TAS": "Tasmania",
-}
+    ("MELBOURNE_INNER", "Melbourne Inner", -37.8136, 144.9631),
+    ("MELBOURNE_INNER_EAST", "Melbourne Inner East", -37.8100, 145.0800),
+    ("MELBOURNE_NORTH_WEST", "Melbourne North West", -37.7000, 144.8500),
+    ("MELBOURNE_SOUTH_EAST", "Melbourne South East", -38.0000, 145.2000),
+    ("MELBOURNE_WEST", "Melbourne West", -37.8200, 144.7000),
+]
 
 LOCATION_COORDS = {
     "Melbourne": (-37.8136, 144.9631),
@@ -67,7 +58,6 @@ def get_or_create_default_location() -> Location:
 
 
 def mock_uv_value() -> float:
-    # Simple deterministic mock based on current hour window.
     current_hour = datetime.now().hour
     if 6 <= current_hour <= 18:
         return round(uniform(3.5, 11.0), 1)
@@ -180,22 +170,27 @@ def get_uv_trend(current_uv: float, hours: int = 6) -> list[dict]:
     return trend
 
 
-def get_region_uv_map(current_uv: float | None = None) -> list[dict]:
-    snapshot = []
-    for code, baseline in REGIONAL_BASELINES.items():
-        if code == "VIC" and current_uv is not None:
-            uv_value = round(float(current_uv), 1)
-        else:
-            uv_value = round(max(0, baseline + uniform(-1.5, 1.5)), 1)
+from random import uniform
 
-        risk_label, burn_minutes = classify_uv(uv_value)
-        snapshot.append(
-            {
-                "code": code,
-                "label": REGION_LABELS[code],
-                "uv_index": uv_value,
-                "risk_level": risk_label,
-                "burn_time_minutes": burn_minutes,
-            }
-        )
-    return snapshot
+def get_region_uv_map(current_uv=None):
+    results = []
+
+    for code, label, lat, lon in VICTORIA_SA4_CENTERS:
+        try:
+            uv_index = get_real_uv_value(lat, lon)
+        except Exception as e:
+            print(f"Failed to fetch UV for {label}: {e}")
+            base = current_uv if current_uv is not None else mock_uv_value()
+            uv_index = round(max(0, base + uniform(-0.8, 0.8)), 1)
+
+        risk_level, burn_time = classify_uv(uv_index)
+
+        results.append({
+            "code": code,
+            "label": label,
+            "uv_index": uv_index,
+            "risk_level": risk_level,
+            "burn_time_minutes": burn_time,
+        })
+
+    return results

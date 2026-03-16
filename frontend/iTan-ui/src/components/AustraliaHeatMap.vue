@@ -2,8 +2,8 @@
   <section class="panel map-panel">
     <header>
       <div>
-        <p class="eyebrow">National snapshot</p>
-        <h2>Australia UV heatmap</h2>
+        <p class="eyebrow">Victoria snapshot</p>
+        <h2>Victoria UV heatmap</h2>
       </div>
       <button type="button" class="ghost" @click="$emit('refresh')">Update</button>
     </header>
@@ -11,7 +11,7 @@
     <div v-if="loading" class="loading">Drawing UV heatmap…</div>
 
     <div v-else class="map-wrapper">
-      <svg :viewBox="mapData.viewBox" role="img" aria-label="UV index by state">
+      <svg :viewBox="mapData.viewBox" role="img" aria-label="UV index by region in Victoria">
         <g v-for="location in mapData.locations" :key="location.id">
           <path
             :d="location.path"
@@ -32,6 +32,7 @@
           </span>
         </p>
         <p class="hint">Burn time ≈ {{ activeRegion.burn_time_minutes }} min without protection</p>
+        <p class="hint">Map path: {{ activeLocationId }}</p>
       </div>
       <ul class="legend">
         <li v-for="bucket in buckets" :key="bucket.label">
@@ -45,7 +46,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import australia from '@svg-maps/australia'
+import victoriaSa4 from '@/data/victoriaSa4'
 
 const props = defineProps({
   regions: {
@@ -60,16 +61,19 @@ const props = defineProps({
 
 defineEmits(['refresh'])
 
-const mapData = reactive(australia)
+const mapData = reactive(victoriaSa4)
+
 const REGION_LOCATION_IDS = {
-  ACT: ['act'],
-  NSW: ['nsw'],
-  QLD: ['qld-mainland', 'qld-fraser-island', 'qld-mornington-island'],
-  VIC: ['vic'],
-  TAS: ['tas-mainland', 'tas-king-currie-island', 'tas-flinders-island', 'tas-cape-barren'],
-  SA: ['sa-mainland', 'sa-kangaroo-island'],
-  WA: ['wa'],
-  NT: ['nt-mainland', 'nt-melville-island', 'nt-groote-eylandt'],
+  BARWON: ['region-3', 'region-17'],
+  GIPPSLAND: ['region-5'],
+  HUME: ['region-16','region-4'],
+  LODDON_MALLEE: ['region-15'],
+
+  MELBOURNE_INNER: ['region-6', 'region-7', 'region-8', 'region-10'],
+  MELBOURNE_INNER_EAST: ['region-9'],
+  MELBOURNE_NORTH_WEST: ['region-1', 'region-2'],
+  MELBOURNE_SOUTH_EAST: ['region-11', 'region-12'],
+  MELBOURNE_WEST: ['region-13', 'region-14'],
 }
 
 const regionLookup = computed(() => {
@@ -86,7 +90,7 @@ const highestRegion = computed(() => {
 })
 
 const activeRegion = ref(null)
-
+const activeLocationId = ref(null)
 watch(
   () => props.regions,
   () => {
@@ -117,6 +121,7 @@ const fillForLocation = (locationId) => {
 }
 
 const setActive = (locationId) => {
+  activeLocationId.value = locationId
   const region = regionForLocation(locationId)
   if (region) {
     activeRegion.value = region
@@ -124,6 +129,7 @@ const setActive = (locationId) => {
 }
 
 const clearActive = () => {
+  activeLocationId.value = null
   activeRegion.value = highestRegion.value
 }
 </script>

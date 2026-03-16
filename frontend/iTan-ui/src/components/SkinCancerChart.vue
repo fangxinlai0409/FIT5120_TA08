@@ -5,7 +5,6 @@
         <p class="eyebrow">Awareness insight</p>
         <h2>{{ title }}</h2>
       </div>
-      <button type="button" class="ghost" @click="$emit('refresh')">Refresh data</button>
     </header>
     <div v-if="loading" class="loading">Loading chart…</div>
     <div v-else class="chart-wrapper">
@@ -53,7 +52,6 @@ const props = defineProps({
   },
 })
 
-defineEmits(['refresh'])
 
 const chartData = computed(() => ({
   labels: props.series.map((item) => item.year),

@@ -1,4 +1,6 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
+from math import exp
 from random import uniform
 import requests
 from django.conf import settings
@@ -147,23 +149,69 @@ def get_protection_advice(uv_value: float) -> str:
     return f"UV {uv_value}: apply broad-spectrum SPF50+, seek shade within {burn_minutes} minutes."
 
 
-def get_uv_trend(current_uv: float, hours: int = 6) -> list[dict]:
-    base = datetime.now(timezone.utc)
+def get_uv_trend(current_uv: float, hours: int = 10) -> list[dict]:
+    mel_tz = ZoneInfo("Australia/Melbourne")
+    base = datetime.now(mel_tz)
     trend = []
+
+    peak_hour = 14.5   # 2:30 PM
+    peak_uv = 9.0
+    end_hour = 18.0    # after 6 PM -> 0
+
+    current_hour = base.hour + base.minute / 60
+
+    def interpolate(x, x0, y0, x1, y1):
+        if x <= x0:
+            return y0
+        if x >= x1:
+            return y1
+        return y0 + (x - x0) * (y1 - y0) / (x1 - x0)
 
     for offset in range(hours):
         hour_time = base + timedelta(hours=offset)
+        sim_hour = hour_time.hour + hour_time.minute / 60
 
         if offset == 0:
             uv_value = current_uv
-        else:
-            uv_value = current_uv + (3 - offset) * uniform(0.3, 0.8)
 
+        else:
+            # case 1: current time is before 2:30 PM
+            if current_hour < peak_hour:
+                if sim_hour <= peak_hour:
+                    # rise from current real value to peak 9 at 14:30
+                    uv_value = interpolate(
+                        sim_hour,
+                        current_hour, current_uv,
+                        peak_hour, peak_uv
+                    )
+                elif sim_hour <= end_hour:
+                    # fall from peak 9 at 14:30 to 0 at 18:00
+                    uv_value = interpolate(
+                        sim_hour,
+                        peak_hour, peak_uv,
+                        end_hour, 0.0
+                    )
+                else:
+                    uv_value = 0.0
+
+            # case 2: current time is after 2:30 PM
+            else:
+                if sim_hour <= end_hour:
+                    # continue dropping from current value to 0 by 18:00
+                    uv_value = interpolate(
+                        sim_hour,
+                        current_hour, current_uv,
+                        end_hour, 0.0
+                    )
+                else:
+                    uv_value = 0.0
+
+        uv_value = max(0.0, min(9.0, round(uv_value, 1)))
         risk_label, _ = classify_uv(uv_value)
 
         trend.append({
             "time": hour_time.isoformat(),
-            "uv_index": round(uv_value, 1),
+            "uv_index": uv_value,
             "risk_level": risk_label,
         })
 

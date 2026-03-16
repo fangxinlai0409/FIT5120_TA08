@@ -14,6 +14,8 @@ import {
 import { notifyHighUV } from './services/notification'
 
 const location = ref('Melbourne')
+const userLatitude = ref(null)
+const userLongitude = ref(null)
 const uvPayload = ref(null)
 const cancerStats = ref([])
 const selectedSex = ref('Persons')
@@ -36,7 +38,12 @@ const lastUpdated = ref('-')
 const loadUV = async () => {
   loading.uv = true
   try {
-    const data = await fetchCurrentUV(location.value)
+    const data = await fetchCurrentUV({
+      location: location.value,
+      lat: userLatitude.value,
+      lon: userLongitude.value,
+    })
+
     uvPayload.value = data
     lastUpdated.value = new Date(data.fetched_at).toLocaleTimeString([], {
       hour: '2-digit',
@@ -50,6 +57,31 @@ const loadUV = async () => {
   } finally {
     loading.uv = false
   }
+}
+
+const detectUserLocation = () => {
+  if (!navigator.geolocation) {
+    refreshAll()
+    return
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      userLatitude.value = position.coords.latitude
+      userLongitude.value = position.coords.longitude
+      location.value = 'Your location'
+      refreshAll()
+    },
+    (error) => {
+      console.warn('Geolocation denied or unavailable:', error)
+      refreshAll()
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 300000,
+    }
+  )
 }
 
 const loadStats = async () => {
@@ -132,12 +164,16 @@ const actions = {
   refreshAll,
 }
 
-watch(location, () => {
+watch(location, (newLocation) => {
+  if (newLocation !== 'Your location') {
+    userLatitude.value = null
+    userLongitude.value = null
+  }
   loadUV()
 })
 
 onMounted(() => {
-  refreshAll()
+  detectUserLocation()
 })
 </script>
 

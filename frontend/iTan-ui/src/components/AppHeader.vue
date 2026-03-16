@@ -8,6 +8,7 @@
     <div class="location-picker">
       <label for="location">Location</label>
       <select id="location" :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
+        <option value="Your location">Your location</option>
         <option value="Melbourne">Melbourne</option>
         <option value="Geelong">Geelong</option>
         <option value="Bendigo">Bendigo</option>

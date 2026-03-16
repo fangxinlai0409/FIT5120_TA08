@@ -34,6 +34,11 @@ REGION_LABELS = {
     "TAS": "Tasmania",
 }
 
+LOCATION_COORDS = {
+    "Melbourne": (-37.8136, 144.9631),
+    "Geelong": (-38.1499, 144.3617),
+    "Bendigo": (-36.7570, 144.2794),
+}
 
 def classify_uv(uv_value: float) -> tuple[str, int]:
     if uv_value < 3:
@@ -92,11 +97,36 @@ def get_real_uv_value(latitude: float, longitude: float) -> float:
 
     return round(float(uvi),1)
 
-def get_current_uv(location_name: str | None = None) -> UVReading:
-    location = get_or_create_default_location()
+def get_current_uv(location_name: str | None = None, lat: str | None = None, lon: str | None = None) -> UVReading:
+    if lat is not None and lon is not None:
+        latitude = float(lat)
+        longitude = float(lon)
+
+        location = Location.objects.filter(name="Your location").first()
+        if not location:
+            location = Location.objects.create(
+                name="Your location",
+                latitude=latitude,
+                longitude=longitude,
+            )
+        else:
+            location.latitude = latitude
+            location.longitude = longitude
+            location.save()
+
+    else:
+        if location_name is None:
+            location_name = "Melbourne"
+
+        location = Location.objects.filter(name=location_name).first()
+        if not location:
+            location = Location.objects.get(name="Melbourne")
+
+        latitude = location.latitude
+        longitude = location.longitude
 
     try:
-        uv_value = get_real_uv_value(location.latitude, location.longitude)
+        uv_value = get_real_uv_value(latitude, longitude)
     except Exception as e:
         print(f"OpenWeather UV fetch failed: {e}")
         uv_value = mock_uv_value()
@@ -110,6 +140,7 @@ def get_current_uv(location_name: str | None = None) -> UVReading:
         burn_time_minutes=burn_minutes,
         observation_time=datetime.now(timezone.utc),
     )
+
     return reading
 
 

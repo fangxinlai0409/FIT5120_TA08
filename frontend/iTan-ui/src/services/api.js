@@ -5,8 +5,18 @@ const apiClient = axios.create({
   timeout: 8000,
 })
 
-export const fetchCurrentUV = async (location = 'Melbourne') => {
-  const response = await apiClient.get('uv/current/', { params: { location } })
+export const fetchCurrentUV = async ({ location = 'Melbourne', lat = null, lon = null } = {}) => {
+  const params = {}
+
+  if (lat != null && lon != null) {
+    params.lat = lat
+    params.lon = lon
+    params.location = location
+  } else {
+    params.location = location
+  }
+
+  const response = await apiClient.get('uv/current/', { params })
   return response.data
 }
 

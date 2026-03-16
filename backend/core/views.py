@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,18 +21,20 @@ from .services.uv_service import (
 
 class CurrentUVView(APIView):
     def get(self, request):
-        location = request.query_params.get("location")
-        reading = get_current_uv(location)
+        location = request.query_params.get("location", "Melbourne")
+        lat = request.query_params.get("lat")
+        lon = request.query_params.get("lon")
+
+        reading = get_current_uv(location_name=location, lat=lat, lon=lon)
         serializer = UVReadingSerializer(reading)
-        warning = build_warning(reading.uv_index, reading.risk_level, reading.burn_time_minutes)
-        return Response(
-            {
-                "reading": serializer.data,
-                "warning": warning,
-                "trend": get_uv_trend(float(reading.uv_index)),
-                "fetched_at": datetime.utcnow().isoformat() + "Z",
-            }
-        )
+
+        trend = get_uv_trend(reading.uv_index)
+
+        return Response({
+            "reading": serializer.data,
+            "trend": trend,
+            "fetched_at": datetime.now(timezone.utc),
+        })
 
 
 class UVMessageView(APIView):

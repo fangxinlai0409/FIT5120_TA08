@@ -13,7 +13,6 @@
         <option value="Geelong">Geelong</option>
         <option value="Bendigo">Bendigo</option>
       </select>
-      <button type="button" class="refresh" @click="$emit('refresh')">Refresh</button>
       <button type="button" class="notify-btn" @click="toggleNotifications">
         {{ notificationsEnabled ? 'Disable UV Alerts' : 'Enable UV Alerts' }}
       </button> 

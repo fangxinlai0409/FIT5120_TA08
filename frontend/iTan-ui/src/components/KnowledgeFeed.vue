@@ -15,7 +15,6 @@
           {{ tag }}
         </button>
       </div>
-      <button type="button" class="ghost" @click="$emit('refresh')">Refresh</button>
     </header>
 
     <article class="featured" v-if="featuredItem">

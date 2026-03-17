@@ -12,6 +12,7 @@ import {
   fetchMortalityStats,
 } from './services/api'
 import { notifyHighUV } from './services/notification'
+import PasswordPage from './views/PasswordPage.vue'
 
 const location = ref('Melbourne')
 const userLatitude = ref(null)
@@ -34,6 +35,11 @@ const loading = reactive({
   regions: true,
 })
 const lastUpdated = ref('-')
+const hasAccess = ref(localStorage.getItem('site_access') === 'true')
+
+const unlockSite = () => {
+  hasAccess.value = true
+}
 
 const loadUV = async () => {
   loading.uv = true
@@ -178,7 +184,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page">
+  <PasswordPage v-if="!hasAccess" @unlocked="unlockSite" />
+  <div v-else class="page">
     <TopNav />
     <AppHeader v-model="location" @refresh="refreshAll" />
 
